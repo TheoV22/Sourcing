@@ -1,4 +1,8 @@
 import scrapy
+# from bmiscraper.items import BMIscraperItem
+from items import BMIscraperItem
+from scrapy.loader import ItemLoader
+
 
 class BMIMeasurementSpider (scrapy.Spider):
 
@@ -8,28 +12,21 @@ class BMIMeasurementSpider (scrapy.Spider):
 
     def parse(self, response):
         for products in response.css('div.company-offer-contain'):
-            try:
-                yield {
-                    'name': products.css('a.company-name::text').get(),
-                    'experience': products.css('span.integrity-year::text').get(),
-                    'link': products.css('a.company-name').attrib['href'],
-                    'price' : products.css('span.price::text').get(),
-                    'Labels': products.css('a.company-name::text').get(),
-                    'MOQ': products.css('a.company-name::text').get(),
-                    'employees': products.css('a.company-name::text').get(),
-                }
-            except:
-                yield {
-                    'name': products.css('a.company-name::text').get(),
-                    'experience': '',
-                    'link': products.css('a.company-name').attrib['href'],
-                    'price': 'sold out',
-                    'Labels': '',
-                    'MOQ': '',
-                    'employees': '',                }
+            l = ItemLoader(item = BMIscraperItem(), selector = products)
+
+            l.add_css('name', 'a.company-name')
+            l.add_css('experience', 'span.integrity-year')
+            l.add_css('link', 'a.company-name::attr(href)')
+            l.add_css('price', 'span.price')
+            l.add_css('factory', 'span.factory-tag')
+            # l.add_css('Labels', 'a.company-name::text')
+            # l.add_css('MOQ', 'a.company-name::text')
+            # l.add_css('employees', 'a.company-name::text')
+
+            yield l.load_item()
+
         next_page = response.css('a.fui-next').attrib['href']
         # Careful, on 1688, no href is given for the next page
 
         if next_page is not None:
             yield response.follow(next_page, callback=self.parse)
-

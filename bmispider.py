@@ -74,6 +74,6 @@ class BMIMeasurementSpider (scrapy.Spider):
 
         self.counter += 1
 
-def spider_closed(self, spider):
-    with open('results.json', 'w') as fp:
-        json.dump(self.results, fp)
+    def spider_closed(self, spider):
+        with open('results.json', 'w') as fp:
+            json.dump(self.results, fp)

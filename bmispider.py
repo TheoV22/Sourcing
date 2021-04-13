@@ -37,9 +37,9 @@ class BMIMeasurementSpider (scrapy.Spider):
 
     def parse2(self, response):
     # extract links of nested webpages from parent page and send them to another parse function
-        time.sleep(2)
         for products in response.css("div.company-offer-card > div.company-left-card > div.company-info-contain > div.title-container > a.company-name::attr('href')"):
             yield scrapy.Request(url=products.get(), callback=self.parseNested)
+            time.sleep(2)
 
         next_page = response.css('a.fui-next').attrib['href']
         # Careful, on 1688, no href is given for the next page
@@ -49,12 +49,12 @@ class BMIMeasurementSpider (scrapy.Spider):
 
     def parseNested(self, response):
     # extract data from the nested webpages
-        time.sleep(2)
         for attr in response.css('div.company-offer-contain'):
+            time.sleep(2)
             yield {
                 'Certifications': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i5.6f2d3cb72krorG"::text').get(),
                 'MOQ': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i0.6f2d3cb79cNLnm"::text').get(),
-                'employees': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i8.6f2d3cb72krorG"::text').get(),
+                'Employees': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i8.6f2d3cb72krorG"::text').get(),
                 'PlantArea': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i6.6f2d3cb72krorG"::text').get(),
                 'Proofing': attr.css('font.data-spm-anchor-id="a262cb.19918180.khuur57j.i7.6f2d3cb72krorG"::text').get(),
             }
@@ -67,7 +67,7 @@ class BMIMeasurementSpider (scrapy.Spider):
             'factory': factory,
             'Certifications': certifications,
             'MOQ': MOQ,
-            'employees': employees,
+            'Employees': Employees,
             'PlantArea': PlantArea,
             'Proofing': Proofing,
         }
